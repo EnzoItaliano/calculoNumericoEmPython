@@ -1,4 +1,5 @@
 import math
+from decimal import *
 # Conversão de Base e Erros
 ## Base Binária
 def dectobinDecimal(n):
@@ -200,7 +201,6 @@ def erroRel(Aex, Aaprox):
 # erroRel(math.pi, 3.14)
 
 # Representação binária
-from decimal import *
 def Represenbin(n):
     s = int(n[0])
     c = 0

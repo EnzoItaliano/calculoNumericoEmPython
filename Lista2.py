@@ -119,7 +119,7 @@ def newton(f, e, a, b):
 
 
 
-x = symbols('x') #define x e y como variáveis simbólicas.
+x = symbols('x') #define x como variável simbólica.
 # def f(x): return x**2-2
 # newton(f(x), 0.00005, 1, 2)
 
