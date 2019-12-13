@@ -2,30 +2,26 @@ import math
 import matplotlib.pyplot as plt
 from prettytable import PrettyTable
 from sympy import *
+import numpy as np
 #Raízes de Equações
 ##Método da Bissecção
 def plot2d(f, inicio, fim):
-    x = []
-    while inicio <= fim+0.1:
-        x.append(inicio)
-        inicio += 0.1
+    z = np.arange(inicio,fim,0.1)
     
     y = []
-    f = f.replace("x", "x[i]")
-    for i in range(len(x)):
-        y.append(eval(f))
+    for i in range(len(z)):
+        y.append(f.subs(x,z[i]))
     
-    plt.plot(x, y)
+    fig, ax = plt.subplots()
+    ax.set(title='Gráfico função f(x)='+str(f))
+    ax.plot(z,y)
+    ax.grid()
     plt.show()
-    # print(y)
 
 def bisseccao(f, e, a, b):
-    f = f.replace("x", "y")
-    
-    y = a
-    fa = eval(f)
-    fb = eval(f)
-    if fa * fb > 0:
+    fa = f.subs(x,a)
+    fb = f.subs(x,b)
+    if fa * fb >= 0:
         print("Não atende ao critério f(a) * f(b) < 0")
         return
     
@@ -47,12 +43,12 @@ def bisseccao(f, e, a, b):
     for k in range(times):
         if k == 0:
             y = ak[len(ak)-1]
-            fak.append(eval(f))
+            fak.append(round(f.subs(x,y),9))
             y = bk[len(bk)-1]
-            fbk.append(eval(f))
+            fbk.append(round(f.subs(x,y),9))
             xk.append((ak[len(ak)-1] + bk[len(bk)-1])/2)
             y = xk[len(xk)-1]
-            fxk.append(eval(f))
+            fxk.append(round(f.subs(x,y),9))
             xk_x.append('-')
         else:
             if (fak[len(fak)-1] < 0 and fxk[len(fxk)-1] < 0) or (fak[len(fak)-1] > 0 and fxk[len(fxk)-1] > 0):
@@ -63,12 +59,12 @@ def bisseccao(f, e, a, b):
                 bk.append(xk[len(xk)-1])
 
             y = ak[len(ak)-1]
-            fak.append(eval(f))
+            fak.append(round(f.subs(x,y),9))
             y = bk[len(bk)-1]
-            fbk.append(eval(f))
+            fbk.append(round(f.subs(x,y),9))
             xk.append((ak[len(ak)-1] + bk[len(bk)-1])/2)
             y = xk[len(xk)-1]
-            fxk.append(eval(f))
+            fxk.append(round(f.subs(x,y),9))
             temp = xk[len(xk)-1] - xk[len(xk)-2]
             if temp < 0:
                 temp = temp * -1
@@ -82,9 +78,10 @@ def bisseccao(f, e, a, b):
 
     print(Table)
 
-# f = "x**2-3"
-# plot2d(f, 0, 2)
-# bisseccao(f, 0.01, -5, -1)
+x = symbols('x') #define x como variável simbólica.
+# def f(x): return x**2-3
+# plot2d(f(x), 0, 2)
+# bisseccao(f(x), 0.01, 1, 2)
 
 ## Método de Newton
 def newton(f, e, a, b):
@@ -117,9 +114,6 @@ def newton(f, e, a, b):
         
         print(Table)
 
-
-
-x = symbols('x') #define x como variável simbólica.
 # def f(x): return x**2-2
 # newton(f(x), 0.00005, 1, 2)
 
@@ -157,7 +151,7 @@ def secante(f, e, a, b):
     print(Table)
 
 # def f(x): return cos(x) - x
-# secante(f(x), 0.00001, 0.5, 0.75)
+# secante(f(x), 0.00001, 0.5, math.pi/4)
 
 ## Método Regula Falsi
 def regulaFalsi(f, e, a, b):

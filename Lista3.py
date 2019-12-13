@@ -123,7 +123,6 @@ def Cholesky(A, B):
         mX = sistLinear(transpG, mY, ordem[0])
         print(prettymatrix.matrix_to_string(mX, name='X = '))
         
-
 # A = [[4,2,-4],[2,10,4],[-4,4,9]]
 # B = [0, 6, 5]
 # Cholesky(A,B)
@@ -175,7 +174,6 @@ def LU(A,B):
     print(prettymatrix.matrix_to_string(mY, name='Y = '))
     print(prettymatrix.matrix_to_string(mX, name='X = '))
 
-
 # A = [[5,2,1],[-1,4,2],[2,-3,10]]
 # B = [-12, 20, 3]
 # LU(A,B)
@@ -214,8 +212,6 @@ def MA(A, B, ordem):
                 A[i][j] = MA[i][j]
     return MA, MB
 
-
-
 def Gauss_parcial(A, B):
     ordem = np.shape(A)
     if ordem[0] == 0: return print("Isso não é uma matriz")
@@ -247,8 +243,8 @@ def norma_linha(A):
     return somaMaior
 
 
-# A = [10,2,1,1,5,1,2,3,10]
-# print("||A||_inf = ", norma_linhaV(A))
+# A = [[10,2,1],[1,5,1],[2,3,10]]
+# print("||A||_inf = ", norma_linha(A))
 
 def norma_coluna(A):
     ordem = np.shape(A)
