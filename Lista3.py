@@ -38,16 +38,6 @@ def Transposta(A, ordem):
     if soma == 0:
         return 1
 
-def matrizG(ordem):
-    k = ordem
-    G = []
-    for i in range(k):
-        G.append([])
-    for i in range(k):
-        for j in range(k):
-            G[i].append(0)
-    return G
-
 def valoresG(A, G, ordem):
     k = ordem
     for i in range(k):
@@ -105,14 +95,14 @@ def Cholesky(A, B):
         if( not trans ):
             return print("Matriz não é igual sua transposta")
 
-        mG = matrizG(ordem[0])
+        mG = np.zeros((ordem[0],ordem[1]))
         mG = valoresG(A, mG, ordem[0])
         print(prettymatrix.matrix_to_string(mG, name='G = '))
 
         mY = sistLinear(mG, B, ordem[0])
         print(prettymatrix.matrix_to_string(mY, name='Y = '))
 
-        transpG = matrizG(ordem[0])
+        transpG = np.zeros((ordem[0],ordem[1]))
         for i in range(ordem[0]):
             for j in range(ordem[0]):
                 transpG[i][j] = mG[j][i]
@@ -123,9 +113,9 @@ def Cholesky(A, B):
         mX = sistLinear(transpG, mY, ordem[0])
         print(prettymatrix.matrix_to_string(mX, name='X = '))
         
-# A = [[4,2,-4],[2,10,4],[-4,4,9]]
-# B = [0, 6, 5]
-# Cholesky(A,B)
+A = [[4,2,-4],[2,10,4],[-4,4,9]]
+B = [0, 6, 5]
+Cholesky(A,B)
 
 ## Método LU
 def valoresLU(L, U, A, ordem):
@@ -212,7 +202,7 @@ def MA(A, B, ordem):
                 A[i][j] = MA[i][j]
     return MA, MB
 
-def Gauss_parcial(A, B):
+def Gauss(A, B):
     ordem = np.shape(A)
     if ordem[0] == 0: return print("Isso não é uma matriz")
     if ordem[0] != ordem[1]: return print("Esta matriz não é quadrada")
@@ -222,7 +212,7 @@ def Gauss_parcial(A, B):
 
 # A = [[1,2,3],[3,1,0],[0,3,4]]
 # B = [3, 4, 3]
-# Gauss_parcial(A,B)
+# Gauss(A,B)
 
 # Métodos iterativos
 ## Norma Linha
@@ -418,7 +408,7 @@ def GaussSeidel(A, B, X0, e):
     
     print(Table)
 
-A = [[10,2,1],[1,5,1],[2,3,10]]
-B = [14, 11, 8]
-X0 = [0,0,0]
-GaussSeidel(A, B, X0, 0.01)
+# A = [[10,2,1],[1,5,1],[2,3,10]]
+# B = [14, 11, 8]
+# X0 = [0,0,0]
+# GaussSeidel(A, B, X0, 0.01)

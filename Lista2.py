@@ -79,9 +79,9 @@ def bisseccao(f, e, a, b):
     print(Table)
 
 x = symbols('x') #define x como variável simbólica.
-# def f(x): return x**2-3
+def f(x): return x**2-3
 # plot2d(f(x), 0, 2)
-# bisseccao(f(x), 0.01, 1, 2)
+bisseccao(f(x), 0.01, 1, 1.5)
 
 ## Método de Newton
 def newton(f, e, a, b):
