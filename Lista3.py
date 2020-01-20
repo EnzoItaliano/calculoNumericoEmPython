@@ -108,14 +108,17 @@ def Cholesky(A, B):
                 transpG[i][j] = mG[j][i]
 
         transpG = np.asarray(transpG)
-        # print(prettymatrix.matrix_to_string(transpG, name='G transposta = '))
 
         mX = sistLinear(transpG, mY, ordem[0])
         print(prettymatrix.matrix_to_string(mX, name='X = '))
         
-A = [[4,2,-4],[2,10,4],[-4,4,9]]
-B = [0, 6, 5]
-Cholesky(A,B)
+# A = [[4,2,-4],
+#      [2,10,4],
+#      [-4,4,9]]
+# B = [0, 
+#      6, 
+#      5]
+# Cholesky(A,B)
 
 ## Método LU
 def valoresLU(L, U, A, ordem):
@@ -210,7 +213,9 @@ def Gauss(A, B):
     mX = sistLinear(mA, mB, ordem[0])
     print(prettymatrix.matrix_to_string(mX, name='X = '))
 
-# A = [[1,2,3],[3,1,0],[0,3,4]]
+# A = [[1,2,3],
+#      [3,1,0],
+#      [0,3,4]]
 # B = [3, 4, 3]
 # Gauss(A,B)
 
@@ -232,10 +237,6 @@ def norma_linha(A):
     
     return somaMaior
 
-
-# A = [[10,2,1],[1,5,1],[2,3,10]]
-# print("||A||_inf = ", norma_linha(A))
-
 def norma_coluna(A):
     ordem = np.shape(A)
     if ordem[0] == 0 or ordem[1] == 0: return print("Isso não é uma matriz")
@@ -250,9 +251,6 @@ def norma_coluna(A):
         print("Soma dos elementos da coluna ", j+1, " = ", soma)
     
     return somaMaior
-
-# A = [[10,2,1],[1,5,1],[2,3,10]]
-# print("||A||_1 = ", norma_coluna(A))
 
 def norma_euclidiana(A):
     ordem = np.shape(A)
@@ -273,37 +271,42 @@ def norma_inf(A):
     
     return somaMaior
 
-# A = [[10,2,1],[1,5,1],[2,3,10]]
+# A = [[3,-5,7],
+#      [1,-2,4],
+#      [-8,1,-7]]
+
+# print("||A||_inf = ", norma_linha(A))
+# print("||A||_1 = ", norma_coluna(A))
 # print("||A||_E = ", norma_euclidiana(A))
 
-# A = [[3,-5,7], [1,-2,4], [-8,1,-7]]
-# norma_linha(A)
-# norma_coluna(A)
-# norma_euclidiana(A)
-
 ## Método Gauss Jacobi
-def condicoes(A, ordem):
+def condicoes(A, ordem, tipo):
+    flag = 0
     for i in range(ordem):
         for j in range(ordem):
-            if A[i][j] > A[i][i]: return false
+            if A[i][j] > A[i][i]:
+              flag = 1
         
     F = np.zeros((ordem,ordem))
     for i in range(ordem):
         for j in range(ordem):
             if i != j:
                 F[i][j] = -(A[i][j]/A[i][i])
-
+    
     if norma_linha(F) < 1:
         return true
-    elif norma_coluna(F) < 1:
+    elif flag == 0:
         return true
+    elif tipo == 1:
+        if norma_coluna(F) < 1:
+            return true
     else:
         return false
 
 def GaussJacobi(A, B, X0, e):
     ordem = np.shape(A)
     if ordem[0] == 0 or ordem[1] == 0: return print("Isso não é uma matriz")
-    if condicoes(A, ordem[0]) == false: return print("A matriz não contém os requisitos necessários para o método")
+    if condicoes(A, ordem[0], 1) == false: return print("A matriz não contém os requisitos necessários para o método")
     
     xk = []
     x_x = []
@@ -332,7 +335,6 @@ def GaussJacobi(A, B, X0, e):
             end_condition = 1
     
     Table = PrettyTable(["k", "xk", "||x^(k+1) - x^(k)||/||x^(k+1)||"])
-    # Table.border = False
     for k in range(0, len(xk)):
         Table.add_row([k, xk[k], x_x[k]])
     
@@ -356,7 +358,7 @@ def Sanssenfeld(A, ordem):
         soma = 0
         for j in range(i+1,ordem):
             soma += abs(A[i][j]/A[i][i])
-        print("B", i, " = ", round(temp+soma,8))
+        print("\u03B2", i, " = ", round(temp+soma,8))
         B.append(temp+soma)
         if B[len(B)-1] > maior:
             maior = B[len(B)-1]
@@ -367,10 +369,12 @@ def Sanssenfeld(A, ordem):
 
 
 def GaussSeidel(A, B, X0, e):
+    flag = 0
     ordem = np.shape(A)
     if ordem[0] == 0 or ordem[1] == 0: return print("Isso não é uma matriz")
-    if condicoes(A, ordem[0]) == false: return print("A matriz não contém os requisitos necessários para o método")
-    if Sanssenfeld(A, ordem[0]) == false: return print("A matriz não contém os requisitos necessários para o método")
+    if condicoes(A, ordem[0], 2) == false: flag = 1
+    if Sanssenfeld(A, ordem[0]) == false: flag = 2
+    if flag == 1 or flag == 2: return print("A matriz não atende aos requisitos do método")
 
     xk = []
     x_x = []
@@ -402,13 +406,12 @@ def GaussSeidel(A, B, X0, e):
             end_condition = 1
     
     Table = PrettyTable(["k", "xk", "||x^(k+1) - x^(k)||/||x^(k+1)||"])
-    # Table.border = False
     for k in range(0, len(xk)):
         Table.add_row([k, xk[k], x_x[k]])
     
     print(Table)
 
-# A = [[10,2,1],[1,5,1],[2,3,10]]
-# B = [14, 11, 8]
+# A = [[5,1,1],[3,4,1],[3,3,6]]
+# B = [5, 6, 0]
 # X0 = [0,0,0]
 # GaussSeidel(A, B, X0, 0.01)

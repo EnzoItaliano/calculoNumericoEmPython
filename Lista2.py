@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from prettytable import PrettyTable
 from sympy import *
 import numpy as np
+x = symbols('x')
 #Raízes de Equações
 ##Método da Bissecção
 def plot2d(f, inicio, fim):
@@ -71,17 +72,40 @@ def bisseccao(f, e, a, b):
             xk_x.append(temp)
 
     Table = PrettyTable(["k", "a", "b", "f(a)", "f(b)", "x", "f(x)", "|x(k) - x(k-1)|"])
-    # Table.border = False
     for k in range(times):
         Table.add_row([k, ak[k], bk[k], fak[k], fbk[k], xk[k], fxk[k], xk_x[k]])
 
 
     print(Table)
+    print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
 
-x = symbols('x') #define x como variável simbólica.
-def f(x): return x**2-3
+# def f(x): return pow(x,2)-3
 # plot2d(f(x), 0, 2)
-bisseccao(f(x), 0.01, 1, 1.5)
+# bisseccao(f(x), 0.01, 1, 2)
+
+## Método do Ponto Fixo
+def pontoFixo(f,e,xi):
+    xk = []
+    xk.append(xi)
+    xk_x = []
+    xk_x.append("-")
+    end_condition = 0
+    while not end_condition:
+        xk.append(f.subs(x,xk[len(xk)-1]))
+        xk_x.append(abs(xk[len(xk)-1]-xk[len(xk)-2]))
+        if xk_x[len(xk_x)-1] < e:
+            end_condition = 1
+    
+    Table = PrettyTable(["k", "xk", "|x(k) - x(k-1)|"])
+    for k in range(0, len(xk)):
+        Table.add_row([k, xk[k], xk_x[k]])
+    
+    print(Table)
+    print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
+
+
+# def f(x): return cos(x)
+# pontoFixo(f(x),10**(-2), math.pi/4)
 
 ## Método de Newton
 def newton(f, e, a, b):
@@ -93,7 +117,6 @@ def newton(f, e, a, b):
 
     if f.subs(x,xk[len(xk)-1]) * diff(diff(f,x),x).subs(x,xk[len(xk)-1]) > 0:
         while not end_condition:
-            # temp = xk[len(xk)-1] - f.subs(x,xk[len(xk)-1])
             func = f.subs(x,xk[len(xk)-1])
             derivate = diff(f,x).subs(x,xk[len(xk)-1])
             temp = xk[len(xk)-1] - func/derivate
@@ -108,11 +131,12 @@ def newton(f, e, a, b):
                 end_condition = 1
             
         Table = PrettyTable(["k", "xk", "|x(k) - x(k-1)|"])
-        # Table.border = False
         for k in range(1, len(xk)):
             Table.add_row([k, xk[k], xk_x[k]])
         
         print(Table)
+
+        print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
 
 # def f(x): return x**2-2
 # newton(f(x), 0.00005, 1, 2)
@@ -143,15 +167,15 @@ def secante(f, e, a, b):
         if xk_x[len(xk_x)-1] < e:
             end_condition = 1
 
-    Table = PrettyTable(["k", "xk", "|x(k+1) - x(k)|"])     # perguntar (caderno)
-    # Table.border = False
+    Table = PrettyTable(["k", "xk", "|x(k+1) - x(k)|"])
     for k in range(2, len(xk)):
         Table.add_row([k, xk[k], xk_x[k]])
         
     print(Table)
+    print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
 
 # def f(x): return cos(x) - x
-# secante(f(x), 0.00001, 0.5, math.pi/4)
+# secante(f(x), 10**(-5), 0.5, math.pi/4)
 
 ## Método Regula Falsi
 def regulaFalsi(f, e, a, b):
@@ -188,11 +212,11 @@ def regulaFalsi(f, e, a, b):
         
 
     Table = PrettyTable(["k", "xk", "|x(k) - x(k-1)|"])
-    # Table.border = False
     for k in range(len(xk)):
         Table.add_row([k+2, xk[k], xk_x[k]])
         
     print(Table)
+    print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
 
 # def f(x): return cos(x)-x
 # regulaFalsi(f(x), 0.00001, 0.5, math.pi/4)
