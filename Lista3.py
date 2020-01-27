@@ -176,18 +176,18 @@ def pivotParcial(A,B,MA,MB,ordem,k):
     if A[k][k] == 0:
         for i in range(k+1,ordem):
             if A[i][k] != 0:
-                temp1 = A[i]
-                temp2 = B[i]
-                temp3 = MA[i]
-                temp4 = MB[i]
-                A[i] = A[k]
-                B[i] = B[k]
-                MA[i] = MA[k]
-                MB[i] = MB[k]
-                A[k] = temp1
-                B[k] = temp2
-                MA[k] = temp3
-                MB[k] = temp4
+                temp1 = copy.copy(A[i])
+                temp2 = copy.copy(B[i])
+                temp3 = copy.copy(MA[i])
+                temp4 = copy.copy(MB[i])
+                A[i] = copy.copy(A[k])
+                B[i] = copy.copy(B[k])
+                MA[i] = copy.copy(MA[k])
+                MB[i] = copy.copy(MB[k])
+                A[k] = copy.copy(temp1)
+                B[k] = copy.copy(temp2)
+                MA[k] = copy.copy(temp3)
+                MB[k] = copy.copy(temp4)
                 break
     save = 0
     maior = -math.inf
@@ -195,18 +195,18 @@ def pivotParcial(A,B,MA,MB,ordem,k):
         if abs(A[i][k]) > maior and i >= k:
             maior = copy.copy(abs(A[i][k]))
             save = copy.copy(i)
-    temp1 = A[save]
-    temp2 = B[save]
+    temp1 = copy.copy(A[save])
+    temp2 = copy.copy(B[save])
     temp3 = copy.copy(MA[save])
     temp4 = copy.copy(MB[save])
-    A[save] = A[k]
-    B[save] = B[k]
-    MA[save] = MA[k]
-    MB[save] = MB[k]
-    A[k] = temp1
-    B[k] = temp2
-    MA[k] = temp3
-    MB[k] = temp4
+    A[save] = copy.copy(A[k])
+    B[save] = copy.copy(B[k])
+    MA[save] = copy.copy(MA[k])
+    MB[save] = copy.copy(MB[k])
+    A[k] = copy.copy(temp1)
+    B[k] = copy.copy(temp2)
+    MA[k] = copy.copy(temp3)
+    MB[k] = copy.copy(temp4)
 
 def MA(A, B, ordem):
     MA = np.zeros((ordem,ordem))
@@ -224,7 +224,6 @@ def MA(A, B, ordem):
             MB[i] = round(B[i] - (B[k] * A[i][k])/A[k][k], 8)
             for j in range(ordem):
                 MA[i][j] = round(A[i][j] - (A[k][j]*A[i][k])/A[k][k], 8)
-
 
         for i in range(ordem):
             for j in range(ordem+1):
@@ -249,11 +248,11 @@ def Gauss(A, B):
     mX = sistLinear(mA, mB, ordem[0])
     print(prettymatrix.matrix_to_string(mX, name='X = '))
 
-# A = [[1,2,3],
-#      [3,1,0],
-#      [0,3,4]]
-# B = [3, 4, 3]
-# Gauss(A,B)
+A = [[2,2,-1],
+     [3,3,1],
+     [1,-1,5]]
+B = [3, 7, 5]
+Gauss(A,B)
 
 # Métodos iterativos
 ## Norma Linha
@@ -340,43 +339,48 @@ def condicaoF(A, ordem, tipo):
         return false
 
 def GaussJacobi(A, B, X0, e):
+    flag = 0
     ordem = np.shape(A)
     if ordem[0] == 0 or ordem[1] == 0: return print("Isso não é uma matriz")
-    if condicaoEDD(A,ordem[0]) == false: return print("A matriz não é E.D.D.")
+    if condicaoEDD(A,ordem[0]) == false:
+        flag += 1
+        print("A matriz não é E.D.D.")
     if condicaoF(A, ordem[0], 1) == false:
-        return print("A matriz não contém os requisitos quando feita a matriz F")
-    
-    xk = []
-    x_x = []
-    xk.append(X0)
-    x_x.append('-')
-    controle = 0
-    end_condition = 0
-    while not end_condition:
-        array = []
-        for i in range(len(X0)):
-            array2 = []
-            temp = 0
-            for j in range(len(X0)):
-                if i != j:
-                    temp += A[i][j]*X0[j]
-            array.append(round((1/A[i][i]) * (B[i] - temp),8))
+        flag += 1
+    if flag != 2:
+        xk = []
+        x_x = []
+        xk.append(X0)
+        x_x.append('-')
+        controle = 0
+        end_condition = 0
+        while not end_condition:
+            array = []
+            for i in range(len(X0)):
+                array2 = []
+                temp = 0
+                for j in range(len(X0)):
+                    if i != j:
+                        temp += A[i][j]*X0[j]
+                array.append(round((1/A[i][i]) * (B[i] - temp),8))
 
-        for i in range(len(array)):
-            array2.append(array[i]-xk[controle][i])
+            for i in range(len(array)):
+                array2.append(array[i]-xk[controle][i])
+            
+            xk.append(array)
+            x_x.append(norma_inf(array2)/norma_inf(array))
+            X0 = array
+            controle += 1
+            if norma_inf(array2)/norma_inf(array) < e:
+                end_condition = 1
         
-        xk.append(array)
-        x_x.append(norma_inf(array2)/norma_inf(array))
-        X0 = array
-        controle += 1
-        if norma_inf(array2)/norma_inf(array) < e:
-            end_condition = 1
-    
-    Table = PrettyTable(["k", "xk", "||x^(k+1) - x^(k)||/||x^(k+1)||"])
-    for k in range(0, len(xk)):
-        Table.add_row([k, xk[k], x_x[k]])
-    
-    print(Table)
+        Table = PrettyTable(["k", "xk", "||x^(k+1) - x^(k)||/||x^(k+1)||"])
+        for k in range(0, len(xk)):
+            Table.add_row([k, xk[k], x_x[k]])
+        
+        print(Table)
+    else:
+        print("A matriz não contém os requisitos quando feita a matriz F")
 
 # A = [[10,2,1],[1,5,1],[2,3,10]]
 # B = [14, 11, 8]
@@ -410,7 +414,9 @@ def GaussSeidel(A, B, X0, e):
     flag = 0
     ordem = np.shape(A)
     if ordem[0] == 0 or ordem[1] == 0: return print("Isso não é uma matriz")
-    if condicaoEDD(A,ordem[0]) == false: return print("Matriz não é E.D.D.")
+    if condicaoEDD(A,ordem[0]) == false:
+        flag += 1
+        print("Matriz não é E.D.D.")
     if condicaoF(A, ordem[0], 2) == false:
         flag += 1
         print("Não atende aos requisitos quando transformada na matriz F")
@@ -418,7 +424,7 @@ def GaussSeidel(A, B, X0, e):
     if Sanssenfeld(A, ordem[0]) == false:
         flag += 1
         print("A matriz não atende ao critério de Sanssenfeld")
-    if flag != 2:
+    if flag != 3:
         xk = []
         x_x = []
         xk.append(X0)
@@ -457,7 +463,7 @@ def GaussSeidel(A, B, X0, e):
     else:
         return print("A matriz não atende aos requisitos do método")
 
-A = [[5,1,1],[3,4,1],[3,3,6]]
-B = [5, 6, 0]
-X0 = [0,0,0]
-GaussSeidel(A, B, X0, 0.01)
+# A = [[5,1,1],[3,4,1],[3,3,6]]
+# B = [5, 6, 0]
+# X0 = [0,0,0]
+# GaussSeidel(A, B, X0, 0.01)
