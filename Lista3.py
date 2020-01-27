@@ -172,6 +172,42 @@ def LU(A,B):
 # LU(A,B)
 
 ## Método de Eliminação de Gauss
+def pivotParcial(A,B,MA,MB,ordem,k):
+    if A[k][k] == 0:
+        for i in range(k+1,ordem):
+            if A[i][k] != 0:
+                temp1 = A[i]
+                temp2 = B[i]
+                temp3 = MA[i]
+                temp4 = MB[i]
+                A[i] = A[k]
+                B[i] = B[k]
+                MA[i] = MA[k]
+                MB[i] = MB[k]
+                A[k] = temp1
+                B[k] = temp2
+                MA[k] = temp3
+                MB[k] = temp4
+                break
+    save = 0
+    maior = -math.inf
+    for i in range(ordem):
+        if abs(A[i][k]) > maior and i >= k:
+            maior = copy.copy(abs(A[i][k]))
+            save = copy.copy(i)
+    temp1 = A[save]
+    temp2 = B[save]
+    temp3 = copy.copy(MA[save])
+    temp4 = copy.copy(MB[save])
+    A[save] = A[k]
+    B[save] = B[k]
+    MA[save] = MA[k]
+    MB[save] = MB[k]
+    A[k] = temp1
+    B[k] = temp2
+    MA[k] = temp3
+    MB[k] = temp4
+
 def MA(A, B, ordem):
     MA = np.zeros((ordem,ordem))
     MB = np.zeros(ordem)
@@ -183,7 +219,7 @@ def MA(A, B, ordem):
 
     mAum = np.zeros((ordem,ordem+1))
     for k in range(ordem-1):
-
+        pivotParcial(A,B,MA,MB,ordem,k)
         for i in range(k+1,ordem):
             MB[i] = round(B[i] - (B[k] * A[i][k])/A[k][k], 8)
             for j in range(ordem):
@@ -280,24 +316,24 @@ def norma_inf(A):
 # print("||A||_E = ", norma_euclidiana(A))
 
 ## Método Gauss Jacobi
-def condicoes(A, ordem, tipo):
-    flag = 0
+def condicaoEDD(A, ordem):
     for i in range(ordem):
         for j in range(ordem):
             if A[i][j] > A[i][i]:
-              flag = 1
-        
+              return false
+
+def condicaoF(A, ordem, tipo):
     F = np.zeros((ordem,ordem))
     for i in range(ordem):
         for j in range(ordem):
             if i != j:
                 F[i][j] = -(A[i][j]/A[i][i])
-    
+    print(prettymatrix.matrix_to_string(F, name='Matriz F = '))
+    print("Cálculo da soma em valor absoluto de cada linha da matriz F:")
     if norma_linha(F) < 1:
         return true
-    elif flag == 0:
-        return true
     elif tipo == 1:
+        print("Cálculo da soma em valor absoluto de cada coluna da matriz F:")
         if norma_coluna(F) < 1:
             return true
     else:
@@ -306,7 +342,9 @@ def condicoes(A, ordem, tipo):
 def GaussJacobi(A, B, X0, e):
     ordem = np.shape(A)
     if ordem[0] == 0 or ordem[1] == 0: return print("Isso não é uma matriz")
-    if condicoes(A, ordem[0], 1) == false: return print("A matriz não contém os requisitos necessários para o método")
+    if condicaoEDD(A,ordem[0]) == false: return print("A matriz não é E.D.D.")
+    if condicaoF(A, ordem[0], 1) == false:
+        return print("A matriz não contém os requisitos quando feita a matriz F")
     
     xk = []
     x_x = []
@@ -372,46 +410,54 @@ def GaussSeidel(A, B, X0, e):
     flag = 0
     ordem = np.shape(A)
     if ordem[0] == 0 or ordem[1] == 0: return print("Isso não é uma matriz")
-    if condicoes(A, ordem[0], 2) == false: flag = 1
-    if Sanssenfeld(A, ordem[0]) == false: flag = 2
-    if flag == 1 or flag == 2: return print("A matriz não atende aos requisitos do método")
+    if condicaoEDD(A,ordem[0]) == false: return print("Matriz não é E.D.D.")
+    if condicaoF(A, ordem[0], 2) == false:
+        flag += 1
+        print("Não atende aos requisitos quando transformada na matriz F")
+    print("Critério de Sanssenfeld:")
+    if Sanssenfeld(A, ordem[0]) == false:
+        flag += 1
+        print("A matriz não atende ao critério de Sanssenfeld")
+    if flag != 2:
+        xk = []
+        x_x = []
+        xk.append(X0)
+        x_x.append('-')
+        controle = 0
+        end_condition = 0
+        while not end_condition:
+            array = []
+            array2 = []
+            for i in range(len(X0)):
+                temp = 0
+                for j in range(len(X0)):
+                    if i != j:
+                        if j < i:
+                            temp += A[i][j]*array[j]
+                        else:
+                            temp += A[i][j]*X0[j]
+                array.append(round((1/A[i][i]) * (B[i] - temp),8))
 
-    xk = []
-    x_x = []
-    xk.append(X0)
-    x_x.append('-')
-    controle = 0
-    end_condition = 0
-    while not end_condition:
-        array = []
-        array2 = []
-        for i in range(len(X0)):
-            temp = 0
-            for j in range(len(X0)):
-                if i != j:
-                    if j < i:
-                        temp += A[i][j]*array[j]
-                    else:
-                        temp += A[i][j]*X0[j]
-            array.append(round((1/A[i][i]) * (B[i] - temp),8))
-
-        for i in range(len(array)):
-            array2.append(array[i]-xk[controle][i])
+            for i in range(len(array)):
+                array2.append(array[i]-xk[controle][i])
+            
+            xk.append(array)
+            x_x.append(norma_inf(array2)/norma_inf(array))
+            X0 = array
+            controle += 1
+            if norma_inf(array2)/norma_inf(array) < e:
+                end_condition = 1
         
-        xk.append(array)
-        x_x.append(norma_inf(array2)/norma_inf(array))
-        X0 = array
-        controle += 1
-        if norma_inf(array2)/norma_inf(array) < e:
-            end_condition = 1
-    
-    Table = PrettyTable(["k", "xk", "||x^(k+1) - x^(k)||/||x^(k+1)||"])
-    for k in range(0, len(xk)):
-        Table.add_row([k, xk[k], x_x[k]])
-    
-    print(Table)
+        Table = PrettyTable(["k", "xk", "||x^(k+1) - x^(k)||/||x^(k+1)||"])
+        for k in range(0, len(xk)):
+            Table.add_row([k, xk[k], x_x[k]])
+        
+        print(Table)
 
-# A = [[5,1,1],[3,4,1],[3,3,6]]
-# B = [5, 6, 0]
-# X0 = [0,0,0]
-# GaussSeidel(A, B, X0, 0.01)
+    else:
+        return print("A matriz não atende aos requisitos do método")
+
+A = [[5,1,1],[3,4,1],[3,3,6]]
+B = [5, 6, 0]
+X0 = [0,0,0]
+GaussSeidel(A, B, X0, 0.01)
