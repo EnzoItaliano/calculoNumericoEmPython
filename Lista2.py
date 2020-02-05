@@ -75,7 +75,6 @@ def bisseccao(f, e, a, b):
     for k in range(times):
         Table.add_row([k, ak[k], bk[k], fak[k], fbk[k], xk[k], fxk[k], xk_x[k]])
 
-
     print(Table)
     print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
 
