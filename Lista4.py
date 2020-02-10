@@ -4,7 +4,6 @@ from sympy import *
 import prettymatrix
 import matplotlib.pyplot as plt
 from prettytable import PrettyTable
-from scipy.interpolate import interp1d
 from numpy.polynomial import Polynomial as P
 x = symbols('x')
 #Interpolação
@@ -575,6 +574,174 @@ def graficoSpline(pontos, valor):
     ax.grid()
     plt.show()
 # pontos = [[0,3.4422],[0.5,2.2302],[1,-0.8228],[1.5,-4.6133],[2,-9.0841]]
-pontos = [[3,2.5],[4.5,1],[7,2.5],[9,.5]]
+# pontos = [[3,2.5],[4.5,1],[7,2.5],[9,.5]]
 # spline(pontos,5)
-graficoSpline(pontos, 5)
+# graficoSpline(pontos, 5)
+
+def minquaddis(pontos, grau):
+    pts = len(pontos)
+    g = np.zeros((grau+1,pts))
+    f = []
+    for j in range(pts):
+        for i in range(grau+1):
+            g[i][j] = pontos[j][0]**i
+        f.append(pontos[j][1])
+    
+    print("Vetores")
+    for i in range(grau+1):
+        print("g"+str(i+1)+" = ", g[i])
+    print("f = ", f)
+    print("")
+
+    B = np.zeros((grau+1,grau+1))
+    for i in range(grau+1):
+        for j in range(grau+1):
+            soma = 0
+            for k in range(pts):
+                soma += g[i][k] * g[j][k]
+            B[i][j] = soma
+    print("A matriz dos coeficientes do sistema, no qual denotamos por B é")
+    print(prettymatrix.matrix_to_string(B, name='B = '))
+
+    print("E a matriz coluna cuja cada entrada é <g_i,f> é:")
+    D = []
+    for i in range(grau+1):
+        soma = 0
+        for k in range(pts):
+            soma += g[i][k] * f[k]
+        D.append([soma])
+    D = np.asarray(D)
+    print(prettymatrix.matrix_to_string(D, name='D = '))
+
+    print("Solução do sistema B*Y=D via eliminação de Gauss com  pivotamento parcial:")
+    Y = sistLinear(B,D,grau+1)
+    print(prettymatrix.matrix_to_string(Y, name='Y = '))
+
+    p = 0
+    for i in range(grau+1):
+        p += Y[i][0]*x**i
+    print(p)
+
+    print("Polinômio g(x) = ",p)
+
+def graficodis(pontos,grau):
+    pts = len(pontos)
+    g = np.zeros((grau+1,pts))
+    f = []
+    for j in range(pts):
+        for i in range(grau+1):
+            g[i][j] = pontos[j][0]**i
+        f.append(pontos[j][1])
+
+    B = np.zeros((grau+1,grau+1))
+    for i in range(grau+1):
+        for j in range(grau+1):
+            soma = 0
+            for k in range(pts):
+                soma += g[i][k] * g[j][k]
+            B[i][j] = soma
+
+    D = []
+    for i in range(grau+1):
+        soma = 0
+        for k in range(pts):
+            soma += g[i][k] * f[k]
+        D.append([soma])
+    D = np.asarray(D)
+
+    Y = sistLinear(B,D,grau+1)
+
+    P = 0
+    for i in range(grau+1):
+        P += Y[i][0]*x**i
+
+    fig, ax = plt.subplots()
+    z = np.arange(-4,4,0.001)
+    
+    y = []
+    for i in range(len(z)):
+        y.append(P.subs(x,z[i]))
+
+    b = []
+    w = []
+    for i in range(len(pontos)):
+        b.append(pontos[i][0])
+        w.append(pontos[i][1])
+
+    ax.plot(b,w, "r*", markersize=6, label="Pontos da tabela")
+    ax.plot(z,y, label='Função g(x)')
+    ax.legend()
+    ax.grid()
+    plt.show()
+
+# pontos = [[-2,1],[-1,-3],[1,1],[2,9]]
+# minquaddis(pontos,2)
+# graficodis(pontos,2)
+
+def minquadcont(f, a, b, grau):
+    grau += 1
+    g = []
+    for i in range(grau):
+        g.append(x**i)
+    # print(g)
+    B = np.zeros((grau,grau))
+    D = np.zeros((grau,1))
+    for i in range(grau):
+        for j in range(grau):
+            B[i][j] = integrate(g[i]*g[j], (x, a, b))
+        D[i][0] = integrate(g[i]*f, (x, a, b))
+
+    print("A matriz dos coeficientes do sistema, no qual denotamos por B é")
+    print(prettymatrix.matrix_to_string(B, name='B = '))
+    print("E a matriz coluna cuja cada entrada é <g_i,f> é:")
+    print(prettymatrix.matrix_to_string(D, name='D = '))
+
+    Y = sistLinear(B, D, grau)
+
+    print("Solução do sistema B*Y=D via eliminação de Gauss com  pivotamento parcial:")
+    print(prettymatrix.matrix_to_string(Y, name='Y = '))
+
+    P = 0
+    for i in range(grau):
+        P += Y[i][0]*x**i
+    print("Polinômio g(x) = ", P)
+
+def graficocont(f, a, b, grau):
+    grau += 1
+    g = []
+    for i in range(grau):
+        g.append(x**i)
+    B = np.zeros((grau,grau))
+    D = np.zeros((grau,1))
+    for i in range(grau):
+        for j in range(grau):
+            B[i][j] = integrate(g[i]*g[j], (x, a, b))
+        D[i][0] = integrate(g[i]*f, (x, a, b))
+
+    Y = sistLinear(B, D, grau)
+
+    P = 0
+    for i in range(grau):
+        P += Y[i][0]*x**i
+
+    fig, ax = plt.subplots()
+    z = np.arange(0,4,0.001)
+    
+    y = []
+    for i in range(len(z)):
+        y.append(P.subs(x,z[i]))
+
+    b = np.arange(0,4,0.001)
+    w = []
+    for i in range(len(b)):
+        w.append(f.subs(x,b[i]))
+
+    ax.plot(b,w, label="Função f(x)")
+    ax.plot(z,y, label='Função g(x)')
+    ax.legend()
+    ax.grid()
+    plt.show()
+
+def f(x): return exp(-x)
+# minquadcont(f(x),1,3,1)
+# graficocont(f(x),1,3,1)
