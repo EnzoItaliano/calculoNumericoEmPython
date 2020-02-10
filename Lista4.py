@@ -1,4 +1,5 @@
 import copy
+import math
 import numpy as np
 from sympy import *
 import prettymatrix
@@ -37,6 +38,19 @@ def Lagrange(pontos, valor, f):
                 print("- ", end="")
     print("\n")
     print("Polinômio interpolador avaliado em x =",valor,", é P("+str(valor)+") =" ,Pn(valor))
+
+    if f != 0:
+        f = diff(f,x,len(poli))
+        # print(simplify(f))
+        maior = abs(f.subs(x,pontos[0][0]))
+        if abs(f.subs(x,pontos[len(pontos)-1][0])) > maior:
+            maior = abs(f.subs(x,pontos[len(pontos)-1][0]))
+        mult = 1
+        for i in range(len(pontos)):
+            mult *= abs(valor-pontos[i][0])
+        E = mult * maior / factorial(len(poli))
+        print("\nLimitante")
+        print("|E("+str(valor)+")| <= ",E.evalf())
 
     
 def plotL(pontos, xi, xf):
@@ -131,8 +145,8 @@ def graficofLagrange(pontos, valor, f):
 
 # def f(x): return (3+x)/(1+x)
 # pontos = [[0.1, 2.82],[0.2, 2.67], [0.4, 2.43]]
-# Lagrange(pontos, 1, f(x))
-# graficoLagrange(pontos, 1)
+# Lagrange(pontos, 0.25, f(x))
+# graficoLagrange(pontos, 0.25)
 # graficofLagrange(pontos, 0.25, f(x))
 
 def Newton(pontos, valor, f):
@@ -171,6 +185,22 @@ def Newton(pontos, valor, f):
 
     print("Polinômio interpolador avaliado em x = "+str(valor)+" é p("+str(valor)+") = ", end="")
     print(round(Pn.subs(x,valor),8))
+
+    if f != 0:
+        f = diff(f,x,degree(Pn,x)+1)
+        print(simplify(f))
+        maior = abs(f.subs(x,pontos[0][0]))
+        if abs(f.subs(x,pontos[len(pontos)-1][0])) > maior:
+            maior = abs(f.subs(x,pontos[len(pontos)-1][0]))
+        print(maior)
+        mult = 1
+        for i in range(len(pontos)):
+            mult *= abs(valor-pontos[i][0])
+        print(mult)
+        E = mult * maior / factorial(degree(Pn,x)+1)
+        print("\nLimitante")
+        print("|E("+str(valor)+")| <= ",E.evalf())
+
 
 def graficoNewton(pontos, valor):
     dif = []
@@ -300,7 +330,22 @@ def NewtonGregory(pontos, valor, f):
     print(Pn)
 
     print("Polinômio interpolador avaliado em x = "+str(valor)+" é p("+str(valor)+") = ", end="")
-    print(round(Pn.subs(x,valor),8))    
+    print(round(Pn.subs(x,valor),8))
+
+    if f != 0:
+        f = diff(f,x,degree(Pn,x)+1)
+        print(simplify(f))
+        maior = abs(f.subs(x,pontos[0][0]))
+        if abs(f.subs(x,pontos[len(pontos)-1][0])) > maior:
+            maior = abs(f.subs(x,pontos[len(pontos)-1][0]))
+        print(maior)
+        mult = 1
+        for i in range(len(pontos)):
+            mult *= abs(valor-pontos[i][0])
+        print(mult)
+        E = mult * maior / factorial(degree(Pn,x)+1)
+        print("\nLimitante")
+        print("|E("+str(valor)+")| <= ",E.evalf())
 
 def graficoNG(pontos, valor):
     intervalo = pontos[1][0] - pontos[0][0]
