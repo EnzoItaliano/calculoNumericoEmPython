@@ -93,14 +93,14 @@ def graficoLagrange(pontos, valor):
     for i in range(len(z)):
         y.append(Pn(z[i]))
 
-    x = []
+    a = []
     w = []
     for i in range(len(pontos)):
-        x.append(pontos[i][0])
+        a.append(pontos[i][0])
         w.append(pontos[i][1])
 
     ax.plot(z,y, label='Polinômio Interpolador P(x)')
-    ax.plot(x,w, "r*", markersize=6, label="Pontos da tabela")
+    ax.plot(a,w, "r*", markersize=6, label="Pontos da tabela")
     ax.plot(valor,Pn(valor), "g*", markersize=6, label="Estimativa")
     ax.legend()
     ax.grid()
@@ -118,7 +118,7 @@ def graficofLagrange(pontos, valor, f):
         Pn = Pn + pontos[i][1] * (mult // div)
     
     fig, ax = plt.subplots()
-    z = np.arange(-0.9,1.5,0.01)
+    z = np.arange(-0.5,1.5,0.01)
     
     y = []
     for i in range(len(z)):
@@ -188,15 +188,13 @@ def Newton(pontos, valor, f):
 
     if f != 0:
         f = diff(f,x,degree(Pn,x)+1)
-        print(simplify(f))
+        # print(simplify(f))
         maior = abs(f.subs(x,pontos[0][0]))
         if abs(f.subs(x,pontos[len(pontos)-1][0])) > maior:
             maior = abs(f.subs(x,pontos[len(pontos)-1][0]))
-        print(maior)
         mult = 1
         for i in range(len(pontos)):
             mult *= abs(valor-pontos[i][0])
-        print(mult)
         E = mult * maior / factorial(degree(Pn,x)+1)
         print("\nLimitante")
         print("|E("+str(valor)+")| <= ",E.evalf())
@@ -285,7 +283,7 @@ def graficofLagrange(pontos, valor, f):
     plt.show()
 
 # def f(x): return exp(x) + sin(x)
-# pontos = [[0,1],[0.5,2.12],[1,3.55]]
+# pontos = [[0,1],[.5,2.12],[1,3.55]]
 # Newton(pontos,0.7,f(x))
 # graficoNewton(pontos, 0.7)
 # graficofLagrange(pontos, 0.7, f(x))
@@ -334,15 +332,13 @@ def NewtonGregory(pontos, valor, f):
 
     if f != 0:
         f = diff(f,x,degree(Pn,x)+1)
-        print(simplify(f))
+        # print(simplify(f))
         maior = abs(f.subs(x,pontos[0][0]))
         if abs(f.subs(x,pontos[len(pontos)-1][0])) > maior:
             maior = abs(f.subs(x,pontos[len(pontos)-1][0]))
-        print(maior)
         mult = 1
         for i in range(len(pontos)):
             mult *= abs(valor-pontos[i][0])
-        print(mult)
         E = mult * maior / factorial(degree(Pn,x)+1)
         print("\nLimitante")
         print("|E("+str(valor)+")| <= ",E.evalf())
@@ -614,10 +610,11 @@ def graficoSpline(pontos, valor):
         w.append(pontos[i][1])
 
     ax.plot(a,w, "r*", markersize=6, label="Pontos da tabela")
-    ax.plot(valor,Pn[1].subs(x,valor), "g*", markersize=6, label="Estimativa")
+    ax.plot(valor,Pn[c].subs(x,valor), "g*", markersize=6, label="Estimativa")
     ax.legend()
     ax.grid()
     plt.show()
+
 # pontos = [[0,3.4422],[0.5,2.2302],[1,-0.8228],[1.5,-4.6133],[2,-9.0841]]
 # pontos = [[3,2.5],[4.5,1],[7,2.5],[9,.5]]
 # spline(pontos,5)
@@ -665,7 +662,6 @@ def minquaddis(pontos, grau):
     p = 0
     for i in range(grau+1):
         p += Y[i][0]*x**i
-    print(p)
 
     print("Polinômio g(x) = ",p)
 
@@ -728,7 +724,6 @@ def minquadcont(f, a, b, grau):
     g = []
     for i in range(grau):
         g.append(x**i)
-    # print(g)
     B = np.zeros((grau,grau))
     D = np.zeros((grau,1))
     for i in range(grau):
