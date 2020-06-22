@@ -161,23 +161,26 @@ def trunc(n, p):
         trunc = trunc + x[i]
     trunc = float(trunc)
     trunc = trunc * 10**c
+    print(trunc)
     w, y, z = str(trunc).partition('.')
-    x = ".".join([w, z[:p]])
+    x = ".".join([w, z[:p-1]])
     print(x)
 
-# trunc(3.1415, 3)
+# def trunc(number, digits) -> float:
+#     stepper = pow(10.0, digits-1)
+#     return math.trunc(stepper * number) / stepper
+
+trunc(math.pi, 3)
 
 def arred(n, p):
     x, c = paraPontoFlut(n)
 
-    # c = int(c)
-    x = round(x, p)
     x = round(x, p)
     x = x * 10**c
     print(x)
 
-# arred(2.667, 3)
-# arred(2.664, 3)
+# arred(1.23456789, 8)
+# arred(2.66455, 4)
 
 ## Erro absoluto
 def erroAbs(Aex, Aaprox):
@@ -222,5 +225,5 @@ def Represenbin(n):
     result = Decimal((-1)**s * 2**(c-1023) * (1+f))
     print(result)
 
-Represenbin('0100000000111011100100010000000000000000000000000000000000000000')
+# Represenbin('0100000000111011100100010000000000000000000000000000000000000000')
 # Represenbin('01' + 8*'0' + '11101110010001' + 40*'0')

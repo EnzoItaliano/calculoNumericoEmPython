@@ -173,8 +173,9 @@ def secante(f, e, a, b):
     print(Table)
     print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
 
-# def f(x): return cos(x) - x
-# secante(f(x), 10**(-5), 0.5, math.pi/4)
+print("Secante\n")
+def f(x): return 2*x**3-5*x**2-10*x+20
+secante(f(x), 10**(-5), 1.2, 1.7)
 
 ## Método Regula Falsi
 def regulaFalsi(f, e, a, b):
@@ -183,7 +184,8 @@ def regulaFalsi(f, e, a, b):
 
     x0 = a
     x1 = b
-
+    print(f.subs(x,a))
+    print(f.subs(x,b))
     end_condition = 0
 
     while not end_condition:
@@ -217,5 +219,6 @@ def regulaFalsi(f, e, a, b):
     print(Table)
     print("Donde \u03B5 é aproximadamente " + str(xk[len(xk)-1]))
 
-# def f(x): return cos(x)-x
-# regulaFalsi(f(x), 0.00001, 0.5, math.pi/4)
+print("\nRegula Falsi\n")
+def f(x): return 2*x**3-5*x**2-10*x+20
+regulaFalsi(f(x), 0.0001, 1.2, 1.7)
