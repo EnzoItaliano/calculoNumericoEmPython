@@ -45,7 +45,6 @@ def graficoeuler(f, a, b, x0, y0, n):
     h = (b - a) / n
     listaX = [x0]
     listaY = [y0]
-    listaErr = []
     num = x0
     for i in range(n):
         num = num + h
@@ -80,9 +79,6 @@ def eulermethod(f, a, b, x0, y0, n):
         listaX.append(num)
     for i in range(n):
         listaY.append(listaY[len(listaY)-1] + h*expr(listaX[i],listaY[len(listaY)-1]))
-
-    def g(y_0, xs):
-        return expr(xs,y_0)
 
     Table = PrettyTable()
     ks = []
@@ -226,7 +222,6 @@ def graficork4(f, a, b, x0, y0, n):
     listaK2 = []
     listaK3 = []
     listaK4 = []
-    listaErr = []
     num = x0
     for i in range(n):
         num = num + h
