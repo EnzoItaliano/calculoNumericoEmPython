@@ -1,5 +1,4 @@
 import copy
-import math
 import numpy as np
 from sympy import *
 import prettymatrix
@@ -238,7 +237,7 @@ def graficoNewton(pontos, valor):
     ax.grid()
     plt.show()
 
-def graficofLagrange(pontos, valor, f):
+def graficofNewton(pontos, valor, f):
     dif = []
     for i in range(len(pontos)):
         dif.append([])
@@ -467,7 +466,6 @@ def spline(pontos, valor):
     h = []
     for i in range(1,len(pontos)):
         h.append(pontos[i][0] - pontos[i-1][0])
-    # print(len(h))
     M = np.zeros((len(h)-1,len(h)-1))
     for i in range(len(h)-1):
         if i == 0:
